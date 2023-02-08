@@ -1,5 +1,4 @@
 """Run inference with a YOLOv5 model on images, videos, directories, streams
-
 Usage:
     $ python path/to/detect.py --source path/to/img.jpg --weights yolov5s.pt --img 640
 """
@@ -23,6 +22,10 @@ from utils.general import check_img_size, check_requirements, check_imshow, colo
 from utils.plots import colors, plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_sync
 
+
+import datetime
+import pymongo
+from pymongo import MongoClient
 
 @torch.no_grad()
 def run(weights='yolov5s.pt',  # model.pt path(s)
@@ -161,6 +164,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
 
             # Print time (inference + NMS)
+            extra = f'{s})'
             print(f'{s}Done. ({t2 - t1:.3f}s)')
 
             # Stream results
@@ -194,7 +198,18 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
     if update:
         strip_optimizer(weights)  # update model (to fix SourceChangeWarning)
 
+    print("EXTRA:    "+ extra)
     print(f'Done. ({time.time() - t0:.3f}s)')
+    client = pymongo.MongoClient('mongodb://localhost:27017')
+    mydb = client["detect_object"]
+    info = mydb.detection
+    print("Thanh cong")
+    print(label)
+    x =datetime.datetime.now()
+    #x = datetime.datetime.now()
+    data = [{"label": extra, "date_create": x}]
+    info.insert_many(data)
+
 
 
 def parse_opt():

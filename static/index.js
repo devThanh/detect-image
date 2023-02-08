@@ -23,6 +23,7 @@ window.onload = () => {
           // image = bytestring.split("'")[1];
           $("#link").css("visibility", "visible");
           $("#download").attr("href", "static/" + data);
+          $("#imageresult").attr("src", "static/"+data);
           console.log(data);
         },
       });

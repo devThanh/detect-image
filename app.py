@@ -3,6 +3,8 @@ from flask import Flask, render_template, request, redirect, send_file, url_for
 from werkzeug.utils import secure_filename, send_from_directory
 import os
 import subprocess
+import torch
+
 
 app = Flask(__name__)
 
@@ -23,17 +25,14 @@ def detect():
     video = request.files['video']
     video.save(os.path.join(uploads_dir, secure_filename(video.filename)))
     print(video)
-    subprocess.run("ls")
-    subprocess.run(['python3', 'detect.py', '--source', os.path.join(uploads_dir, secure_filename(video.filename))])
-
-    # return os.path.join(uploads_dir, secure_filename(video.filename))
+    subprocess.run(['python', 'detect.py', '--source', os.path.join(uploads_dir, secure_filename(video.filename))], shell=True)
     obj = secure_filename(video.filename)
     return obj
 
 @app.route("/opencam", methods=['GET'])
 def opencam():
     print("here")
-    subprocess.run(['python3', 'detect.py', '--source', '0'])
+    subprocess.run(['python', 'detect.py', '--source', '0'], shell=True)
     return "done"
     
 
